@@ -1,17 +1,40 @@
 {
-    "buildNpmdoc":"npm-stats",
+    "author": "kai zhu <kaizhu256@gmail.com>",
+    "buildNpmdoc": "npm-stats",
+    "description": "api documentation for [npm-stats (v1.2.0)](https://github.com/hughsk/npm-stats#readme) [![npm package](https://img.shields.io/npm/v/npmdoc-npm-stats.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-npm-stats) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-npm-stats.svg)](https://travis-ci.org/npmdoc/node-npmdoc-npm-stats)",
     "devDependencies": {
-        "npm-stats": "*",
         "electron-lite": "kaizhu256/node-electron-lite#alpha",
+        "npm-stats": "*",
         "utility2": "kaizhu256/node-utility2#alpha"
     },
-    "name":"npmdoc-npm-stats",
+    "engines": {
+        "node": ">=4.0"
+    },
+    "homepage": "https://github.com/npmdoc/node-npmdoc-npm-stats",
+    "keywords": [
+        "documentation",
+        "npm-stats"
+    ],
+    "license": "MIT",
+    "main": "lib.npmdoc_npm_stats.js",
+    "name": "npmdoc-npm-stats",
+    "nameAlias": "npmdoc_npm_stats",
+    "nameOriginal": "npmdoc-npm-stats",
+    "os": [
+        "darwin",
+        "linux"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/npmdoc/node-npmdoc-npm-stats"
     },
     "scripts": {
-        "build-ci": "utility2 shReadmeTest build_ci.sh"
+        "build-ci": "utility2 shReadmeTest build_ci.sh",
+        "env": "env",
+        "heroku-postbuild": "(set -e; npm install \"kaizhu256/node-utility2#alpha\"; utility2 shDeployHeroku)",
+        "postinstall": "if [ -f npm_scripts.sh ]; then ./npm_scripts.sh postinstall; fi",
+        "start": "(set -e; export PORT=${PORT:-8080}; utility2 start test.js)",
+        "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"
     },
     "version": "0.0.1"
 }
