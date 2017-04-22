@@ -63,6 +63,15 @@
 
         <li>
 
+            <a class="apidocElementLiA" href="#apidoc.element.npm-stats.npm-stats">
+            function <span class="apidocSignatureSpan"></span>npm-stats
+            <span class="apidocSignatureSpan">(registry, mainopts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
             <a class="apidocElementLiA" href="#apidoc.element.npm-stats.defaults">
             function <span class="apidocSignatureSpan">npm-stats.</span>defaults
             <span class="apidocSignatureSpan">(defaults)</span>
@@ -76,6 +85,111 @@
 
 <div class="apidocSectionDiv">
 <h1><a href="#apidoc.module.npm-stats" id="apidoc.module.npm-stats">module npm-stats</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.npm-stats.npm-stats" id="apidoc.element.npm-stats.npm-stats">
+        function <span class="apidocSignatureSpan"></span>npm-stats
+        <span class="apidocSignatureSpan">(registry, mainopts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function stats(registry, mainopts) {
+  if (typeof registry === &#x27;object&#x27;) {
+    mainopts = registry
+    registry = undefined
+  }
+
+  mainopts = merge({}, GLOBAL_DEFAULTS, mainopts, {registry:registry});
+  var nanoConf = merge({url: mainopts.registry}, mainopts.nano)
+
+  var nano = require(&#x27;nano&#x27;)(nanoConf)
+    , modules = nano.db.use(mainopts.modules)
+    , users = nano.db.use(mainopts.users)
+    , downloadUrl = mainopts.downloads
+
+  var Keyword = require(&#x27;./lib/keyword&#x27;)(modules, downloadUrl, users, mainopts)
+    , Module = require(&#x27;./lib/module&#x27;)(modules, downloadUrl, users, mainopts)
+    , User = require(&#x27;./lib/user&#x27;)(modules, downloadUrl, users, mainopts)
+    , Registry = require(&#x27;./lib/registry&#x27;)(modules, downloadUrl, users, mainopts)
+
+  function modifier(method) {
+    return function(options, callback) {
+      options = options || {}
+
+      if (typeof options === &#x27;string&#x27;) {
+        options = { string: options }
+      }
+      if (typeof options === &#x27;function&#x27;) {
+        callback = options
+        options = {}
+      }
+
+      if (!method.select || mainopts.dirty) {
+        return method.call(this, options, callback)
+      }
+
+      var buffer = &#x27;&#x27;
+      var write = callback ? function write(data) {
+        buffer += data
+        this.queue(data)
+      } : function(data) {
+        this.queue(data)
+      }
+
+      var stream = es.pipeline(
+          method.call(this, options)
+        , jsonstream.parse(method.select)
+        , es.mapSync(method.map || passthrough)
+        , method.reduce
+          ? reducestream(method.reduce, method.reduce.start)
+          : es.mapSync(passthrough)
+        , method.single
+          ? es.stringify()
+          : jsonstream.stringify(&#x27;[&#x27;, &#x27;,&#x27;, &#x27;]&#x27;)
+        , es.through(write, end)
+      )
+
+      if (callback) stream.on(&#x27;error&#x27;, callback)
+
+      function end() {
+        var self = this
+
+        if (callback) {
+          try {
+            callback(null, JSON.parse(buffer))
+          } catch(e) {
+            callback(e)
+          }
+          return
+        }
+
+        this.queue(null)
+      }
+
+      return stream
+    }
+  }
+
+  ;[Registry, Keyword, User, Module].forEach(function(model) {
+    Object.keys(model.prototype).forEach(function(name) {
+      var method = model.prototype[name]
+
+      model.prototype[name] = modifier(model.prototype[name])
+    })
+  })
+
+  var registry = new Registry
+
+  registry.user = User
+  registry.module = Module
+  registry.keyword = Keyword
+
+  return registry
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
 
 
     <h2>

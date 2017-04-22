@@ -1,4 +1,4 @@
-<div class="apidocDiv">
+<html><head></head><body><div class="apidocDiv">
 <style>
 /*csslint
 */
@@ -47,17 +47,10 @@
 }
 </style>
 <h1>api documentation for
-    <a
-
-        href="https://github.com/hughsk/npm-stats#readme"
-
-    >npm-stats (v1.2.0)</a>
+    <a href="https://github.com/hughsk/npm-stats#readme">npm-stats (v1.2.0)</a>
 </h1>
 <h4>Convenience module for getting back data from an NPM registry</h4>
-<div class="apidocSectionDiv"><a
-    href="#apidoc.tableOfContents"
-    id="apidoc.tableOfContents"
-><h1>table of contents</h1></a><ol>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.npm-stats">module npm-stats</a><ol>
 
@@ -95,7 +88,7 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function stats(registry, mainopts) {
-  if (typeof registry === &#x27;object&#x27;) {
+  if (typeof registry === 'object') {
     mainopts = registry
     registry = undefined
   }
@@ -103,24 +96,24 @@
   mainopts = merge({}, GLOBAL_DEFAULTS, mainopts, {registry:registry});
   var nanoConf = merge({url: mainopts.registry}, mainopts.nano)
 
-  var nano = require(&#x27;nano&#x27;)(nanoConf)
+  var nano = require('nano')(nanoConf)
     , modules = nano.db.use(mainopts.modules)
     , users = nano.db.use(mainopts.users)
     , downloadUrl = mainopts.downloads
 
-  var Keyword = require(&#x27;./lib/keyword&#x27;)(modules, downloadUrl, users, mainopts)
-    , Module = require(&#x27;./lib/module&#x27;)(modules, downloadUrl, users, mainopts)
-    , User = require(&#x27;./lib/user&#x27;)(modules, downloadUrl, users, mainopts)
-    , Registry = require(&#x27;./lib/registry&#x27;)(modules, downloadUrl, users, mainopts)
+  var Keyword = require('./lib/keyword')(modules, downloadUrl, users, mainopts)
+    , Module = require('./lib/module')(modules, downloadUrl, users, mainopts)
+    , User = require('./lib/user')(modules, downloadUrl, users, mainopts)
+    , Registry = require('./lib/registry')(modules, downloadUrl, users, mainopts)
 
   function modifier(method) {
     return function(options, callback) {
       options = options || {}
 
-      if (typeof options === &#x27;string&#x27;) {
+      if (typeof options === 'string') {
         options = { string: options }
       }
-      if (typeof options === &#x27;function&#x27;) {
+      if (typeof options === 'function') {
         callback = options
         options = {}
       }
@@ -129,7 +122,7 @@
         return method.call(this, options, callback)
       }
 
-      var buffer = &#x27;&#x27;
+      var buffer = ''
       var write = callback ? function write(data) {
         buffer += data
         this.queue(data)
@@ -146,11 +139,11 @@
           : es.mapSync(passthrough)
         , method.single
           ? es.stringify()
-          : jsonstream.stringify(&#x27;[&#x27;, &#x27;,&#x27;, &#x27;]&#x27;)
+          : jsonstream.stringify('[', ',', ']')
         , es.through(write, end)
       )
 
-      if (callback) stream.on(&#x27;error&#x27;, callback)
+      if (callback) stream.on('error', callback)
 
       function end() {
         var self = this
@@ -214,3 +207,4 @@
     ]
 </div>
 </div>
+</body></html>
